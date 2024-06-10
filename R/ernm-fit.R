@@ -12,10 +12,11 @@
 #' @param meanStats if non-missing, these are the target statistics
 #' @param verbose level of verbosity 0, 1, or 2
 #' @param method the optimization method to use
+#' @param time_limit the time limit for the optimization
 ernmFit <- function(sampler,theta0,
 		mcmcBurnIn=10000, mcmcInterval=100, mcmcSampleSize=10000,
 		minIter=3, maxIter=40, objectiveTolerance=.5, gradTolerance=.25,
-		meanStats,verbose=1,method=c("bounded","newton")){
+		meanStats,verbose=1,method=c("bounded","newton"),time_limit=NULL){
 	method <- match.arg(method)
 	sampler$initialize()
 	stats <- sampler$modelStatistics()
@@ -36,6 +37,7 @@ ernmFit <- function(sampler,theta0,
 	likHistory <- c()
 	gradHistory <- list()
 	trace <- list()
+	t<-proc.time()[3]
 	while(iter<maxIter){
 		sample <- sampler$generateSampleStatistics(mcmcBurnIn,mcmcInterval,mcmcSampleSize)	
 		sampStats <- sapply(sampler$statistics(sample),function(x)colMeans(as.matrix(x)))
@@ -106,6 +108,11 @@ ernmFit <- function(sampler,theta0,
 			break
 		}
 		iter<-iter+1
+		if(!is.null(time_limit)){
+		    if(proc.time()[3]-t>time_limit){
+		        stop("Time limit for model fit exceeded")
+		    }
+		}
 	}
 	if(verbose>=0)
 		cat("\n")
