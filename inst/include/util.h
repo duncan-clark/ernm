@@ -198,7 +198,7 @@ inline double nchoosek(double n,double k){
  */
 template<class T>
 inline int indexOf(T &element,std::vector<T> vec){
-	for(int i=0;i<vec.size();i++){
+	for(auto i=0u;i<vec.size();i++){
 		if(vec[i]==element)
 			return i;
 	}

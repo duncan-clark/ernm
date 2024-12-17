@@ -1621,8 +1621,8 @@ public:
 		ssq = 0.0;
 		scube = 0.0;
 		double mean = 0.0;
-		double var = 0.0;
-		double skew = 0.0;
+		//double var = 0.0;
+		//double skew = 0.0;
 		double deg = 0.0;
 
 		for(int i=0;i<n;i++){

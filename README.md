@@ -1,10 +1,33 @@
-# ernm
-Estimation of fully/partially observed Exponential-Family Random     Network Models (ERNM). ERNMs are a generalization of ERGM (see the ergm     package) and Gibbs Fields, encompassing both as special cases
+# Ernm
+Estimation of fully/partially observed Exponential-Family Random Network Models (ERNM). ERNMs are a generalization of ERGM (see the `ergm` package) and Gibbs Fields, encompassing both as special cases.
 
+In the social network modeling context of ERGM, they allow for nodal covariates to be random. As a result
+statistics using both nodal covariates and edges vary as a result of varying edges and varying nodal covariates.
+In the context of Gibbs Fields, the allow for the edges present to vary and similar statistics can be specified
+that now vary as a results of varying edge presence.
+
+## Installation
+
+The package can currenltly be installed directly from github using devtools
+
+```
+devtools::install_github("fellstat/ernm")
+```
+
+## Example
+
+```
+# Include example of how ERNM works 
+
+# Fit to data:
+
+# Predict class labels:
+
+```
 
 ## Adding Statistics
 
-The preferred method for users to use their own custom statistics is to create a package as in the example extension package in inst/examplePackage. Users can then directly call register*Statistic.
+The preferred method for users to use their own custom statistics is to create a package as in the example extension package in inst/examplePackage. Users can then directly call registerStatistic.
 
 For Statistics that may be useful for the wider community. They can be integrated into the ERNM package as follows. This workflow also forces users to adequately test their statistics, which may be beneficial, especially for complex statistics.
 1. Add to the inst/include/stats.h file. This is where the calculation of the statistics defined. Note for ERNM the dyadUpdate and discreteVertexUpdate and continVertexUpdate methods are crucial for the performance of the MCMC routine required to fit ERNMs.

@@ -1,5 +1,5 @@
 Package: ernm
-Maintainer: Ian Fellows <ian@fellstat.com>
+Maintainer: Ian Fellows <ian@fellstat.com>, Duncan Clark <duncan-clark-outlook.com>
 License: LGPL-2.1
 Title: Exponential-Family Random Network Models
 LinkingTo: Rcpp, BH
@@ -23,4 +23,4 @@ Suggests:
     network,
     inline
 RcppModules: ernm
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
