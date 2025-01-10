@@ -14,6 +14,7 @@
 #' @param method the optimization method to use
 ernmFit <- function(sampler,
                     theta0,
+                    theta_constraints = NULL,
                     mcmcBurnIn=10000,
                     mcmcInterval=100,
                     mcmcSampleSize=10000,
@@ -29,8 +30,22 @@ ernmFit <- function(sampler,
 	stats <- sampler$modelStatistics()
 	if(!missing(meanStats))
 		stats <- meanStats
-	logLikelihoodFun <- sampler$logLikelihood
-	
+	print(theta_constraints)
+	if(!is.null(theta_constraints)){
+		logLikelihoodFun <- function(theta,sample,theta0,stats){
+		    for(i in 1:length(theta_constraints)){
+		        constraint <- theta_constraints[[i]]
+		        if(theta[i] > constraint[2] | theta[i] < constraint[1]){
+		            return(list(value = -Inf,
+		                        grad = rep(0,length(theta)),
+		                        hessian = diag(length(theta))))
+		        }
+		    }
+		    sampler$logLikelihood(theta,sample,theta0,stats)
+		}
+	}else{
+	    logLikelihoodFun <- sampler$logLikelihood
+	}
 	if(!missing(theta0)){
 		sampler$setThetas(theta0)
 	}

@@ -817,8 +817,8 @@ public:
     for(int i=0;i<edges->size();i++){
       from = (*edges)[i].first;
       to = (*edges)[i].second;
-      value1 = net.continVariableValue(varIndex,from) - 1;
-      value2 = net.continVariableValue(varIndex,to) - 1;
+      value1 = net.continVariableValue(varIndex,from);
+      value2 = net.continVariableValue(varIndex,to);
       // absolute value of the difference:
       this->stats[0] += std::fabs(value1 - value2);
       }
@@ -826,8 +826,8 @@ public:
   
   void dyadUpdate(const BinaryNet<Engine>& net, int from, int to){
     bool addingEdge = !net.hasEdge(from,to);
-    double value1 = net.continVariableValue(varIndex,from) - 1;
-    double value2 = net.continVariableValue(varIndex,to) - 1;
+    double value1 = net.continVariableValue(varIndex,from);
+    double value2 = net.continVariableValue(varIndex,to);
     if(value1!=value2){
       if(addingEdge)
         this->stats[0] += std::fabs(value1 - value2);
@@ -4341,20 +4341,22 @@ public:
           this->thetas[i] = -.5;
       }
       
-      // Do the intercept:
-      this->stats[y_indices.size()] = 1.0;
-      this->thetas[y_indices.size()] = 0.0;
+
+      this->thetas[y_indices.size()] = 0;
       
       for(int i=0;i<x_indices.size();i++){
         double s = 0.0;
         double ssq = 0.0;
+        double intercept = 0.0;
         if(i==0){
             for(int j=0;j<net.size();j++){
                 s += net.continVariableValue(y_indices[0], j) * net.continVariableValue(x_indices[i], j);
                 ssq += pow(net.continVariableValue(y_indices[0], j), 2.0);
+                intercept += net.continVariableValue(y_indices[0], j);
             }
             this->stats[1 + y_indices.size() + i] = s;
             this->stats[y_indices.size()-1] = ssq;
+            this->stats[y_indices.size()] = intercept;
         }else{
             for(int j=0;j<net.size();j++){
                 s += net.continVariableValue(y_indices[0], j) * net.continVariableValue(x_indices[i], j);
@@ -4379,6 +4381,7 @@ public:
                 net.continVariableValue(variable, vert) * net.continVariableValue(x_indices[j], vert);
         }
         this->stats[y_indices.size()-1] += pow(newValue, 2.0) - pow(net.continVariableValue(variable, vert), 2.0);
+        this->stats[y_indices.size()] += newValue - net.continVariableValue(variable, vert);
       }
     for(int i=0;i<x_indices.size();i++){
       if(x_indices[i] == variable){
