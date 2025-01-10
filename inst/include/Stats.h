@@ -828,11 +828,24 @@ public:
     bool addingEdge = !net.hasEdge(from,to);
     double value1 = net.continVariableValue(varIndex,from);
     double value2 = net.continVariableValue(varIndex,to);
-    if(value1!=value2){
-      if(addingEdge)
+    double old_stat = this->stats[0];
+    if(addingEdge){
         this->stats[0] += std::fabs(value1 - value2);
-      else
+    }else{
         this->stats[0] -= std::fabs(value1 - value2);
+    }
+    if(this->stats[0] < 0.0){
+        Rcpp::Rcout<<"dyad update failed\n";
+        Rcpp::Rcout<<"addingEdge is" << addingEdge << "\n";
+        Rcpp::Rcout<<"from is" << from << "\n";
+        Rcpp::Rcout<<"to is" << to << "\n";
+        Rcpp::Rcout<<"old stat is" << old_stat << "\n";
+        Rcpp::Rcout<<"from value is" << value1 << "\n";
+        Rcpp::Rcout<<"to value is" << value2 << "\n";
+        Rcpp::Rcout<<"new stat is :" << this->stats[0] << "\n";
+        Rcpp::Rcout<<"change in stat should be " << std::fabs(value1 - value2) <<"\n"; 
+        
+        Rf_error("dyad update failed");
     }
   }
   
@@ -840,15 +853,15 @@ public:
                           int variable, double newValue){}
 
   void continVertexUpdate(const BinaryNet<Engine>& net, int vert,
-                            int variable, int newValue){
+                            int variable, double newValue){
     if(variable != varIndex)
       return;
-    int val = net.continVariableValue(varIndex,vert);
+    double val = net.continVariableValue(varIndex,vert);
     if(net.isDirected()){
       NeighborIterator it = net.outBegin(vert);
       NeighborIterator end = net.outEnd(vert);
       while(it!=end){
-        int val2 = net.continVariableValue(varIndex,*it);
+        double val2 = net.continVariableValue(varIndex,*it);
         // remove old value:
         this->stats[0] -= std::fabs(val - val2);
         // add new value 
@@ -858,7 +871,7 @@ public:
       it = net.inBegin(vert);
       end = net.inEnd(vert);
       while(it!=end){
-        int val2 = net.continVariableValue(varIndex,*it);
+        double val2 = net.continVariableValue(varIndex,*it);
         // remove old value:
         this->stats[0] -= std::fabs(val - val2);
         // add new value 
@@ -869,7 +882,7 @@ public:
       NeighborIterator it = net.begin(vert);
       NeighborIterator end = net.end(vert);
       while(it!=end){
-        int val2 = net.continVariableValue(varIndex,*it);
+        double val2 = net.continVariableValue(varIndex,*it);
         // remove old value:
         this->stats[0] -= std::fabs(val - val2);
         // add new value 
@@ -4295,14 +4308,11 @@ public:
   }
   
   std::vector<std::string> statNames(){
-    int nstats =  1 + yNames.size() + xNames.size(); 
+    int nstats = yNames.size() + xNames.size(); 
     std::vector<std::string> statnames(nstats,"");
     statnames[0] = "gaussRegress." + yNames[0] + "Y.Y";
-    for(int i=0;i<yNames.size();i++){
-        statnames[1+i] = "gaussRegress." + yNames[0] + ".intercept" + "Y.X";
-    }
     for(int i=0;i<xNames.size();i++){
-      statnames[1 + yNames.size() + i] = "gaussRegress." + yNames[0] + "." + xNames[i] + "Y.X";
+      statnames[yNames.size() + i] = "gaussRegress." + yNames[0] + "." + xNames[i] + "Y.X";
     }
     return statnames;
   }
@@ -4332,7 +4342,7 @@ public:
     for(int i=0;i<yNames.size();i++){
       if(y_indices[i] < 0)
         ::Rf_error("gauss: variable not found in network");
-      int nstats =  1 + y_indices.size() + xNames.size(); 
+      int nstats =  y_indices.size() + xNames.size(); 
       this->stats = std::vector<double>(nstats,0.0);
       if(this->thetas.size()!=nstats){
         // set to negative so as not to explode y**2
@@ -4341,27 +4351,21 @@ public:
           this->thetas[i] = -.5;
       }
       
-
-      this->thetas[y_indices.size()] = 0;
-      
       for(int i=0;i<x_indices.size();i++){
         double s = 0.0;
         double ssq = 0.0;
-        double intercept = 0.0;
         if(i==0){
             for(int j=0;j<net.size();j++){
                 s += net.continVariableValue(y_indices[0], j) * net.continVariableValue(x_indices[i], j);
                 ssq += pow(net.continVariableValue(y_indices[0], j), 2.0);
-                intercept += net.continVariableValue(y_indices[0], j);
             }
-            this->stats[1 + y_indices.size() + i] = s;
+            this->stats[y_indices.size() + i] = s;
             this->stats[y_indices.size()-1] = ssq;
-            this->stats[y_indices.size()] = intercept;
         }else{
             for(int j=0;j<net.size();j++){
                 s += net.continVariableValue(y_indices[0], j) * net.continVariableValue(x_indices[i], j);
             }
-            this->stats[1 + y_indices.size() + i] = s;
+            this->stats[y_indices.size() + i] = s;
         }
       }
     }
@@ -4377,15 +4381,14 @@ public:
                           int variable, double newValue){
       if(y_indices[0] == variable){
         for(int j=0;j<x_indices.size();j++){
-            this->stats[1 + y_indices.size() + j] += newValue * net.continVariableValue(x_indices[j], vert) -
+            this->stats[y_indices.size() + j] += newValue * net.continVariableValue(x_indices[j], vert) -
                 net.continVariableValue(variable, vert) * net.continVariableValue(x_indices[j], vert);
         }
         this->stats[y_indices.size()-1] += pow(newValue, 2.0) - pow(net.continVariableValue(variable, vert), 2.0);
-        this->stats[y_indices.size()] += newValue - net.continVariableValue(variable, vert);
       }
     for(int i=0;i<x_indices.size();i++){
       if(x_indices[i] == variable){
-        this->stats[1 + y_indices.size() + i] += newValue * net.continVariableValue(y_indices[0], vert) -
+        this->stats[y_indices.size() + i] += newValue * net.continVariableValue(y_indices[0], vert) -
           net.continVariableValue(y_indices[0], vert) * net.continVariableValue(variable, vert);
       }
     }
