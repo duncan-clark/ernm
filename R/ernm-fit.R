@@ -30,7 +30,6 @@ ernmFit <- function(sampler,
 	stats <- sampler$modelStatistics()
 	if(!missing(meanStats))
 		stats <- meanStats
-	print(theta_constraints)
 	if(!is.null(theta_constraints)){
 		logLikelihoodFun <- function(theta,sample,theta0,stats){
 		    for(i in 1:length(theta_constraints)){
