@@ -1148,96 +1148,6 @@ public:
 typedef Stat<Directed, NodeCount<Directed> > DirectedNodeCount;
 typedef Stat<Undirected, NodeCount<Undirected> > UndirectedNodeCount;
 
-
-//template<class Engine>
-//class LogisticModel : public Stat< Engine > {
-//protected:
-//	int nstats; /*!< the number of stats generated */
-//	int nlevels;
-//	Formula formula;
-//public:
-//	LogisticModel(){}
-//
-//	LogisticModel(List params){
-//
-//
-//		try{
-//			formula = as<Formula>(params[0]);
-//		}catch(...){
-//			::Rf_error("LogisticModel requires a formula");
-//		}
-//
-//	}
-//
-//	virtual Stat<Engine>* create(List params) const{
-//		return new LogisticModel(params);
-//	}
-//
-//	virtual std::string name(){
-//		return "logisticModel";
-//	}
-//
-//	virtual void calculate(const BinaryNet<Engine>& net){
-//
-//		Formula form = clone(formula);
-//
-//		int from,to;
-//		int value1, value2;
-//		std::vector<std::string> vars = net.discreteVarNames();
-//
-//		DataFrame df = DataFrame();
-//
-//		for(int i=0;i<vars.size();i++){
-//			IntegerVector tmp = wrap(net.discreteVariableValues(i));
-//			tmp.attr("levels") = wrap(net.discreteVariableAttributes(i).labels());
-//			tmp.attr("class") = wrap("factor");
-//			df.push_back(tmp);
-//		}
-//		df.attr("class") = wrap("data.frame");
-//		df.attr("names") = wrap(vars);
-//
-//		Language cenv("environment",form);
-//		SEXP env = cenv.eval();
-//		Language call("model.frame",form,df);
-//		SEXP mf = call.eval(env);
-//
-//		Language call1("model.matrix",mf,mf);
-//		NumericMatrix mm = call1.eval(env);
-//		Language call2("model.response",mf);
-//		NumericVector response = call2.eval(env);
-//
-///*
-//		Language call3("print",mm);
-//		call3.eval();
-//		Language call4("print",response);
-//		call4.eval();
-//*/
-//		std::vector<double> sums = std::vector<double>(mm.ncol());
-//
-//		for(int i=0;i<mm.nrow();i++){
-//			if(response(i)<1.5)
-//				continue;
-//			for(int j=0;j<sums.size();j++)
-//				sums[j] += mm(i,j);
-//		}
-//
-//		this->stats = sums;
-//		if(this->thetas.size() != sums.size())
-//			this->thetas = std::vector<double>(sums.size(),0.0);
-//
-//
-//		this->changes.resize(this->stats.size());
-//		fill(this->changes.begin(),this->changes.end(),0.0);
-//	}
-//
-//	virtual void deltaEdgeToggle(const BinaryNet<Engine>& net, int from, int to,std::vector<double>* deltas){
-//		fill(deltas->begin(),deltas->end(),0.0);
-//	}
-//
-//};
-//
-//
-
 /*!
  * A logistic regression statistic for variableName regressed upon regressorName.
  */
@@ -4487,7 +4397,8 @@ public:
         if(isDiscrete){
             val1 = net.discreteVariableValue(regIndex,*it);
         }else{
-            val1 = net.continVariableValue(regIndex,*it);}
+            val1 = net.continVariableValue(regIndex,*it);
+        }
         this->stats[0] += val*val1;
         it++;
       }
@@ -4548,14 +4459,14 @@ public:
     double fromVarValue = net.continVariableValue(variableIndex,from);
     double fromRegValue;
     if(isDiscrete){
-      fromRegValue = net.discreteVariableValue(regIndex,from)-1;
+      fromRegValue = net.discreteVariableValue(regIndex,from);
     }else{
       fromRegValue = net.continVariableValue(regIndex,from);
     }
     double toVarValue = net.continVariableValue(variableIndex,to);
     double toRegValue;
     if(isDiscrete){
-        toRegValue = net.discreteVariableValue(regIndex,to)-1;
+        toRegValue = net.discreteVariableValue(regIndex,to);
     }else{
         toRegValue = net.continVariableValue(regIndex,to);
     }
