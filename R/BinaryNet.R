@@ -8,6 +8,7 @@
 #' @param x the object
 #' @param ... unused
 #' @return an undirected network object
+#' @rdname BinaryNet
 #' @examples
 #' edge_list <- matrix(c(1,3),ncol=2)
 #' # create a network with an edge from 1 -> 3
@@ -51,6 +52,7 @@ as.network.Rcpp_UndirectedNet <- function(x,...){
 #' @param x the object
 #' @param ... unused
 #' @return a directed network object
+#' @rdname BinaryNet
 #' @examples
 #' edge_list <- matrix(c(1,3),ncol=2)
 #' # create a network with an edge from 1 -> 3
@@ -89,6 +91,7 @@ as.network.Rcpp_DirectedNet <- function(x,...){
 #' @param x the object
 #' @param ... additional parameters for plot.network
 #' @return No return value, invisibly NULL
+#' @rdname BinaryNet
 #' @method plot Rcpp_DirectedNet
 #' @examples
 #'
@@ -112,6 +115,7 @@ plot.Rcpp_DirectedNet <- function(x,...){
 #' @param x the object
 #' @param ... additional parameters for plot.network
 #' @return No return value, invisibly NULL
+#' @rdname BinaryNet
 #' @method plot Rcpp_UndirectedNet
 #' @examples
 #'
@@ -139,6 +143,7 @@ plot.Rcpp_UndirectedNet <- function(x,...){
 #' @param ... unused
 #' @export
 #' @return either an Rcpp_UndirectedNet or Rcpp_DirectedNet object
+#' @rdname BinaryNet
 #' @examples
 #'
 #' data(samplike)

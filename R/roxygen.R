@@ -8,6 +8,7 @@ NULL
 #' Register statistics
 #' @name registerDirectedStatistic
 #' @return no return value
+#' @keywords internal
 #' @aliases registerDirectedStatistic registerUndirectedStatistic
 #' registerDirectedOffset
 #' registerUndirectedOffset
@@ -17,6 +18,7 @@ NULL
 #' Metropolis samplers
 #' @name ErnmSamplers
 #' @docType class
+#' @keywords internal
 #' @aliases
 #' Rcpp_DirectedMetropolisHastings-class
 #' Rcpp_UndirectedMetropolisHastings-class
@@ -37,6 +39,10 @@ NULL
 NULL
 
 #' Models
+#' 
+#' `ErnmModels` covers ERNM's native, Rcpp-module model classes exposing their
+#' methods to the R interface
+#' 
 #' @name ErnmModels
 #' @docType class
 #' @aliases DirectedModel UndirectedModel
@@ -45,10 +51,17 @@ NULL
 #' DirectedTaperedModel UndirectedTaperedModel
 NULL
 
-#' BinaryNet
+#' BinaryNet: native ERNM network types and methods
+#'
+#' `BinaryNet` covers ERNM's native, Rcpp-module network classes and their
+#' convenience methods. These classes back directed/undirected **binary**
+#' networks and interoperate with the **network** package via coercion helpers.
+#'
 #' @name BinaryNet
 #' @docType class
-#' @aliases DirectedNet UndirectedNet Rcpp_DirectedNet-class Rcpp_UndirectedNet-class
+#' @aliases DirectedNet UndirectedNet
+#' @aliases Rcpp_DirectedNet-class Rcpp_UndirectedNet-class
+#' @keywords classes
 NULL
 
 #' Internal symbols
@@ -56,12 +69,14 @@ NULL
 #' @description Internal symbols used to access compiles code.
 #' @docType methods
 #' @aliases _rcpp_module_boot_ernm _ernm_initToggles _ernm_initStats initLatent
+#' @keywords internal
 NULL
 
 #' runErnmCppTests
 #' @name runErnmCppTests
 #' @description Runs the internal C++ tests for the ernm package.
 #' @return A logical value indicating whether all tests passed.
+#' @keywords internal
 #' @examples
 #' runErnmCppTests()
 #'

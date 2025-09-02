@@ -1,5 +1,4 @@
 #' @useDynLib ernm, .registration = TRUE
-#' @exportPattern ^[^\.]
 #' @import methods
 #' @import Rcpp
 #' @import BH

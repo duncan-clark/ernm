@@ -23,3 +23,4 @@
 \description{
 Metropolis samplers
 }
+\keyword{internal}

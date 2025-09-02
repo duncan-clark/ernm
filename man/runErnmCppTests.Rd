@@ -13,3 +13,4 @@ Runs the internal C++ tests for the ernm package.
 runErnmCppTests()
 
 }
+\keyword{internal}
