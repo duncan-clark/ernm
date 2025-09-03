@@ -13,5 +13,6 @@
 \alias{UndirectedTaperedModel}
 \title{Models}
 \description{
-Models
+`ErnmModels` covers ERNM's native, Rcpp-module model classes exposing their
+methods to the R interface
 }
